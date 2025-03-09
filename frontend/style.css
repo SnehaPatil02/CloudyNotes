@@ -1,0 +1,17 @@
+
+    .right-sidebar {
+        border-left: 1px solid #ddd; /* Add a separator */
+        border-right: 1px solid #ddd;
+        max-height: 150px;
+        overflow-y: scroll;
+    }
+
+   
+
+    textarea {
+    border: 0 none white;
+    overflow: hidden;
+    padding: 0;
+    outline: none;
+    background-color: #D0D0D0;
+}

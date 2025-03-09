@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
+    <title>Markdown Notes App</title>
+    <script src="script.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="flex flex-col h-screen">
+
+    
+
+    <!-- Main Content -->
+    <div class="flex flex-1 overflow-y-scroll">
+        <!-- Sidebar (With "New Note" Button) -->
+        <div class="w-1/4 bg-gray-100 p-4 overflow-y-scroll">
+            <button id="newNoteBtn" class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-500">
+                ➕ New Note
+            </button>
+            <div id="sidebar" class="mt-2"></div>
+        </div>
+  
+
+        <!-- Editor -->
+        <div class="flex-1 flex flex-col overflow-y-scroll">
+            <div id="editor" class="flex-1 p-4 border" placeholder="Select a file to edit..."></div>
+        </div>
+
+        <div class="w-1/4 bg-gray-100 p-4 flex flex-col overflow-hidden overflow-y-scroll" id="right-sidebar">
+            <!-- Bottom Bar -->
+            <div class="p-4 bg-gray-100">
+               
+            <div class="p-4 border rounded bg-white shadow fixed bottom-0 right-0 w-1/4 overflow-y-scroll">
+                <textarea id="searchBox" placeholder="Ask AI..." 
+                    class="p-2 border rounded w-full resize-none overflow-hidden"
+                    rows="1" oninput="autoExpand(this)"></textarea>
+                    
+                </div></div>
+            <h2 class="text-lg font-bold mb-2" id="question-title"></h2>
+            <div id="right-sidebar-content">
+                <!-- Content will be added dynamically -->
+               
+            
+        </div>
+    </div>
+
+    </div>
+
+
+</body>
+</html>
