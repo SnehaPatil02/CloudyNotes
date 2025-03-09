@@ -2,8 +2,9 @@ import os
 from pgvector.psycopg import register_vector
 import psycopg  # psycopg3
 from psycopg.rows import dict_row
+print("start")
 
-DATA_FOLDER = "./data"
+DATA_FOLDER = "./backend/data"
 
 def create_db_connection() -> psycopg.Connection:
     """Create and return a database connection."""
