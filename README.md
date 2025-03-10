@@ -72,7 +72,5 @@ python addNotes.py
 cd backend
 uvicorn main:app --reload
 
-cd frontend
-python -m http.server 8080
 ```
 
