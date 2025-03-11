@@ -1,0 +1,33 @@
+service: fastapi-serverless
+
+provider:
+  name: aws
+  runtime: python3.11
+
+functions:
+  app:
+    handler: backend/main.handler
+    events:
+      - httpApi:
+          path: /docs
+          method: GET
+      - httpApi:
+          path: /get_data
+          method: GET
+      - httpApi:
+          path: /{proxy+}  # Matches all routes
+          method: ANY
+
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+custom:
+  serverless-offline:
+    # httpPort: 3000  # You can change the port if needed
+
+package:
+  patterns:
+    - '!__pycache__/**'
+    - '!node_modules/**'
+    - 'backend/**'
+    

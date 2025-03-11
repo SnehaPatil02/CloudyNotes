@@ -4,13 +4,22 @@ from pydantic import BaseModel
 import psycopg  # psycopg3
 from pgvector.psycopg import register_vector
 import os
+import pathlib
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi import FastAPI
+from mangum import Mangum
 
 
-from notes_rag_testing import generate_rag_response
+
+
+from .notes_rag_testing import generate_rag_response
 
 app = FastAPI(title="Sneha app")
 
-DATA_FOLDER = "./data"
+DATA_FOLDER = "./backend/data"
 
 # Database Connection
 def create_db_connection() -> psycopg.Connection:
@@ -134,7 +143,7 @@ class EmojiUpdate(BaseModel):
     emoji: str
 
 # Fetch files & emojis
-@app.get("/files")
+@app.get("/get_data")
 def list_files():
     # Fetch emojis from the database
     with conn.cursor() as cur:
@@ -193,6 +202,32 @@ def create_new_note(data: NewNote):
     return {"message": "New note created"}
 
 
+
+# FastAPI Web Application with Dynamic HTML Templates
+BASE_DIR = pathlib.Path(__file__).parent
+templates = Jinja2Templates(directory=[
+    BASE_DIR / "templates",
+])
+
+app.mount("/static", StaticFiles(directory=BASE_DIR/"static", html = True), name="static")
+
+@app.get('/', response_class=HTMLResponse)
+async def index(request: Request):
+    
+    context = {
+        "request": request,
+        "title": "Home Page"
+    }
+    response = templates.TemplateResponse("index.html", context)
+    return response
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, Serverless!"}
+
+# Wrap FastAPI app with Mangum for AWS Lambda
+handler = Mangum(app)
 
 # if __name__ == "__main__":
 #     import uvicorn

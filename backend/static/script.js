@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "http://localhost:3000";
 let currentFile = "";
 
 function rsplit(str) {
@@ -38,7 +38,7 @@ async function deleteNotes(path){
 
 // Load file list
 async function loadFiles() {
-    const response = await fetch(`${API_URL}/files`);
+    const response = await fetch(`${API_URL}/get_data`);
     const data = await response.json();
     const sidebar = document.getElementById("sidebar");
     sidebar.innerHTML = "";
