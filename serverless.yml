@@ -1,5 +1,7 @@
 service: fastapi-serverless
 
+useDotenv: true
+
 provider:
   name: aws
   runtime: python3.11
@@ -7,6 +9,7 @@ provider:
 functions:
   app:
     handler: backend/main.handler
+    timeout: 50
     events:
       - httpApi:
           path: /docs

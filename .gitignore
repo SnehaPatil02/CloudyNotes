@@ -9,4 +9,11 @@ wheels/
 # Virtual environments
 .venv
 node_modules/**
+backend/node_modules/**
 .serverless/**
+.env
+hello.db
+hello.db-client_wal_index
+hello.db-shm
+hello.db-wal
+test.py
