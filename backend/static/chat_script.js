@@ -1,5 +1,4 @@
 
-
 var input = document.getElementById("input-box");
 var arrow = document.getElementById("fill-arrow");
 var sendButton = document.getElementById("send-button");
@@ -33,9 +32,10 @@ document.getElementById("input-box").addEventListener("keypress", function (even
 
 
 class chat {
-  constructor(text, isBot) {
+  constructor(text, isBot, chunk_id=null) {
     this.text = text;
     this.isBot = isBot;
+    this.chunk_id = chunk_id;
   }
 }
 var conversation = [
@@ -47,6 +47,7 @@ var conversation = [
 var llm_history = null
 var send_context = false;
 var web_search = false;
+var db_Search = false;
 
 async function sendChat() {
   if (input.value.trim() === "") {
@@ -61,9 +62,12 @@ async function sendChat() {
   }
   else if(web_search){
     body = JSON.stringify({chat: [{ text: text }], llm_history:llm_history, web_search: web_search})
+  }else if(db_Search){
+    
+    body = JSON.stringify({chat: [{text: text }], llm_history: llm_history, db_search: db_Search })
   }
   else {
-    body = JSON.stringify({ chat: [{ text: text }], llm_history: llm_history , web_search : false});
+    body = JSON.stringify({ chat: [{ text: text }], llm_history: llm_history });
   }
   response = await fetch(`${API_URL}/chat`, {
     method: "POST",
@@ -72,17 +76,30 @@ async function sendChat() {
   });
   const data = await response.json();
   llm_history = data.llm_history;
-  
-  conversation.push(new chat(data.bot_message, isBot = true));
+ 
+  if (db_Search ) {
+    data.forEach(d => {
+      conversation.push(new chat(d.bot_message, isBot = true, chunk_id=d.chunk_id));
+    });
+  } else {
+    conversation.push(new chat(data.bot_message, isBot = true));
+  }
 
   const conversationData = [];
   const conversationBox = document.getElementById("conversation-box");
   conversation.forEach(message => {
     if (message.isBot == true) {
-      conversationData.push(`<div class="bubble bot">
+      botHtml = `<div class="bubble bot">
                                 <div class="image"></div>
-                                <p> ${message.text}</p>
-                            </div>`)
+                                <p> 
+                            `
+      
+      if(message.chunk_id != null){
+        botHtml += `<button onclick="loadFileByID('${message.chunk_id}')">Open</button>`;
+      }
+      botHtml = botHtml + `${message.text}</p></div>`;
+              
+      conversationData.push(botHtml);
     } else {
       conversationData.push(`<div class="bubble user">
         <p>${message.text}</p>
@@ -122,4 +139,13 @@ async function webSearch(){
   web_search = isOn;
 
   console.log("Searching.....!");
+}
+
+async function dbSearch(){
+  let dbSearchButton = document.getElementById("dbSearch-button");
+  let isOn = dbSearchButton.classList.toggle("light-on");
+  dbSearchButton.style.background = isOn ? "gold" : "lightgray";
+  db_Search = isOn;
+
+  console.log("DB Search is ...."+ db_Search)
 }

@@ -90,7 +90,7 @@
 }
 
 /* Common button styles */
-#toggle-button, #send-button {
+#toggle-button, #send-button{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,6 +103,18 @@
 }
 /* Common button styles */
 #search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Makes it circular */
+    background: lightblue;
+    cursor: pointer;
+    /* transition:  0.3s ease, transform 0.2s ease; */
+}
+
+#dbSearch-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,14 +140,25 @@
     background: silver;
     transform: scale(1.1);
 }
+
+#reset-button:hover {
+    background: silver;
+    transform: scale(1.1);
+}
 /* Light bulb color when ON */
 /* .light-on {
     fill: yellow !important;
 } */
 #reset-button{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Makes it circular */
+    background: lightblue;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+   
    
 }
 
@@ -186,7 +209,7 @@
  }
 
  .chat .bubble.bot p::before {
-     @include ball;
+     /* @include ball; */
      animation-delay: .15s;
  }
 

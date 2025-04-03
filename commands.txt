@@ -1,0 +1,13 @@
+cd backend
+uvicorn main:app --reload
+
+cd frontend
+python -m http.server 8080
+
+=>for python based frontend backend
+serverless offline --reloadHandler
+
+=> for react frontend 
+cd frontend
+npm run dev 
+
