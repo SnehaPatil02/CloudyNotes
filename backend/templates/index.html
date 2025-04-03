@@ -1,58 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta http-equiv='cache-control' content='no-cache'>
-<meta http-equiv='expires' content='0'>
-<meta http-equiv='pragma' content='no-cache'>
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
     <title>Markdown Notes App</title>
     <script src="static/script.js" defer></script>
+    <script src="static/chat_script.js" defer></script>
+    <link rel="stylesheet" href="static/chat_style.css">
+    <link rel="stylesheet" href="static/toggle_button.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 </head>
-<body class="flex flex-col h-screen">
 
-    
+<body class="flex flex-col h-screen">
+    <style>
+
+    </style>
+    <style>
+        .collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+
+
+        }
+
+        .active,
+        .collapsible:hover {
+            background-color: #555;
+
+        }
+    </style>
+
+
 
     <!-- Main Content -->
-    <div class="flex flex-1 overflow-y-scroll">
+    <div class="flex h-screen overflow-hidden">
         <!-- Sidebar (With "New Note" Button) -->
-        <div class="w-1/4 bg-gray-100 p-4 overflow-y-scroll">
+        <div class="w-1/6 bg-gray-100 p-4 overflow-y-auto">
             <button id="newNoteBtn" class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-500">
                 ➕ New Note
+            </button><br><br>
+
+            <button id="addFldBtn" class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-500">
+                ➕ Add folder
             </button>
             <div id="sidebar" class="mt-2"></div>
         </div>
-  
+
 
         <!-- Editor -->
-        <div class="flex-1 flex flex-col overflow-y-scroll">
-            <div id="editor" class="flex-1 p-4 border" placeholder="Select a file to edit..."></div>
-        </div>
+        <div class="flex-1 flex flex-col  overflow-y-auto">
 
-        <div class="w-1/4 bg-gray-100 p-4 flex flex-col overflow-hidden overflow-y-scroll" id="right-sidebar">
-            <!-- Bottom Bar -->
-            <div class="p-4 bg-gray-100">
-               
-            <div class="p-4 border rounded bg-white shadow fixed bottom-0 right-0 w-1/4 overflow-y-scroll">
-                <textarea id="searchBox" placeholder="Ask AI..." 
-                    class="p-2 border rounded w-full resize-none overflow-hidden"
-                    rows="1" oninput="autoExpand(this)"></textarea>
+
+            <div class="h-screen flex flex-row">
+                <!-- Textarea container (2 parts of the available space) -->
+                <div class="w-2/3 flex flex-col overflow-y-auto">
+                    <div class="p-4 space-y-4" id="saveChanges">
+                        <button class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-500">
+                            Save Changes
+                        </button>
+                    </div>
+                    <div class="p-4 space-y-4" id="generateContentByTemplateId">
+                        <textarea id="inputText" class="w-full p-2 border rounded" rows="5"
+                            placeholder="Enter your text here..."></textarea>
+
+                        <!-- Dropdown -->
+                        <select id="optionSelect" class="w-full p-2 border rounded">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                        </select>
+
+                        <!-- Generate Button -->
+                        <button id="generateBtn" class="w-full p-2 bg-green-500 text-white rounded hover:bg-green-600">
+                            Generate
+                        </button>
+                    </div>
+                    <!-- <input type="checkbox" id="toggle" name="toggle" value="is_on"> -->
                     
-                </div></div>
-            <h2 class="text-lg font-bold mb-2" id="question-title"></h2>
-            <div id="right-sidebar-content">
-                <!-- Content will be added dynamically -->
-               
-            
+                        <div class="toggle-button-container">
+                            <div class="toggle-button gd">
+                                <div class="btn btn-pill" id="toggle_button">
+                                    <input id="edit-read-toggle" type="checkbox" class="checkbox" />
+                                    <div class="knob"></div>
+                                    <div class="btn-bg"></div>
+                                </div>
+                            </div>
+                        </div>
+                    
+
+
+                    <textarea id="editor" class="w-full h-full p-2 border-none outline-none"></textarea>
+
+                </div>
+
+                <!-- Chat widget container (1 part of the available space) -->
+                <div class="w-1/3 flex flex-col overflow-y-scroll">
+                    <div class=" chat-widget">
+                        <div class="top">
+                            <div class="buttons">
+                                <!-- little x mark      &#10007; -->
+                                <div id="minimize">
+                                </div>
+                                <div id="exit">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat p-2" id="conversation-box">
+
+                        </div>
+
+                        <div class="bottom">
+                            <textarea id="input-box" type="text" lines="5" placeholder="Type question..."
+                                onkeyup="textAreaAdjust(this)"></textarea>
+                            <div class="bottom-button">
+                                <button id="toggle-button" onclick="toggleFunction()">
+                                    <svg id="lightbulb-icon" style="width:24px; height:24px" viewBox="0 0 24 24">
+                                        <path id="toggle-icon" fill="#9e9e9e"
+                                            d="M9 21h6v-2H9v2m3-20a7 7 0 0 1 7 7c0 2.61-1.27 4.39-2.41 5.66-.87.97-1.59 1.77-1.59 3.34v1h-6v-1c0-1.57-.72-2.37-1.59-3.34C5.27 12.39 4 10.61 4 8a7 7 0 0 1 7-7m0 2a5 5 0 0 0-5 5c0 2.02.98 3.35 2.06 4.53.86.94 1.69 1.84 1.94 3.22h2c.25-1.38 1.08-2.28 1.94-3.22C15.02 10.35 16 9.02 16 7a5 5 0 0 0-5-5Z" />
+                                    </svg>
+                                </button>
+                                <button id="send-button" disabled onclick="sendChat()">
+                                    <svg style="width:24px; height:24px" viewBox="0 0 24 24">
+                                        <path id="fill-arrow" fill="#9e9e9e" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                                    </svg>
+                                </button>
+                                <button id="reset-button" type="reset" onclick="resetTextArea()">
+                                    <svg style="width:24px; height:24px" viewBox="0 0 24 24">
+                                        <path fill="#9e9e9e"
+                                            d="M12,5V9H16V5H12M14,1C8.48,1 4,5.48 4,11H0L5,16L10,11H6C6,6.58 9.58,3 14,3C18.42,3 22,6.58 22,11C22,15.42 18.42,19 14,19C11.5,19 9.24,17.93 7.82,16H5.31C6.97,18.83 9.99,21 14,21C19.52,21 24,16.52 24,11C24,5.48 19.52,1 14,1Z" />
+                                    </svg>
+                                </button>
+                                <button id="search-button" type="reset" onclick="webSearch()">
+                                    <svg style="width:24px; height:24px" viewBox="0 0 48 48">
+                                        <path fill="#9e9e9e"
+                                            d="M 11.5 6 C 8.4802259 6 6 8.4802259 6 11.5 L 6 36.5 C 6 39.519774 8.4802259 42 11.5 42 L 36.5 42 C 39.519774 42 42 39.519774 42 36.5 L 42 11.5 C 42 8.4802259 39.519774 6 36.5 6 L 11.5 6 z M 11.5 9 L 36.5 9 C 37.898226 9 39 10.101774 39 11.5 L 39 36.5 C 39 37.898226 37.898226 39 36.5 39 L 11.5 39 C 10.101774 39 9 37.898226 9 36.5 L 9 11.5 C 9 10.101774 10.101774 9 11.5 9 z M 21.5 13 C 16.823344 13 13 16.823348 13 21.5 C 13 26.176652 16.823344 30 21.5 30 C 23.299133 30 24.968247 29.429391 26.345703 28.466797 L 32.439453 34.560547 A 1.50015 1.50015 0 1 0 34.560547 32.439453 L 28.466797 26.345703 C 29.42939 24.968247 30 23.299131 30 21.5 C 30 16.823348 26.176656 13 21.5 13 z M 21.5 16 C 24.555336 16 27 18.444666 27 21.5 C 27 24.555334 24.555336 27 21.5 27 C 18.444664 27 16 24.555334 16 21.5 C 16 18.444666 18.444664 16 21.5 16 z">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button id="dbSearch-button" onclick="dbSearch()">
+                                    <svg style="width:48px; height:48px" viewBox="0 0 220 172">
+                                        <path fill="#9e9e9e"
+                                            d="M58.263,64.946c3.58-8.537,9.834-16.039,18.456-21.02c6.644-3.842,14.225-5.876,21.902-5.876 c6.376,0,12.568,1.461,18.207,4.031V21.677C116.829,9.706,92.563,0,62.641,0C32.71,0,8.448,9.706,8.448,21.677v21.681 C8.436,54.75,30.372,64.061,58.263,64.946z M62.629,5.416c29.77,0,48.768,9.633,48.768,16.255c0,6.634-18.998,16.258-48.768,16.258 c-29.776,0-48.774-9.624-48.774-16.258C13.855,15.049,32.853,5.416,62.629,5.416z M8.429,75.883V54.202 c0,10.973,20.396,20.015,46.841,21.449c-1.053,7.21-0.311,14.699,2.375,21.799C30.055,96.445,8.436,87.184,8.429,75.883z M95.425,125.631c-9.109,2.771-20.457,4.445-32.796,4.445c-29.931,0-54.193-9.706-54.193-21.684V86.709 c0,11.983,24.256,21.684,54.193,21.684c0.341,0,0.673-0.018,1.014-0.018C71.214,118.373,82.827,124.656,95.425,125.631z M131.296,63.11c-10.388-17.987-33.466-24.174-51.46-13.785c-17.987,10.388-24.173,33.463-13.792,51.45 c10.388,17.993,33.478,24.174,51.465,13.798C135.51,104.191,141.684,81.102,131.296,63.11z M71.449,97.657 C62.778,82.66,67.945,63.394,82.955,54.72c15.01-8.662,34.275-3.504,42.946,11.509c8.672,15.013,3.502,34.279-11.508,42.943 C99.377,117.85,80.117,112.686,71.449,97.657z M139.456,133.852l-16.203,9.353l-12.477-21.598l16.209-9.359L139.456,133.852z M137.708,149.562c-4.488,2.582-10.199,1.06-12.794-3.429l16.216-9.353C143.718,141.268,142.184,146.979,137.708,149.562z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    </div>
-
 
 </body>
+
 </html>

@@ -1,0 +1,2 @@
+INSERT INTO "template"("id", "template") VALUES(1, '# [Title of the Notes]  ## Table of Contents - [Header 1] - [Header 2] - [Header 3]  ---  ## [Header 1] [Body content for Header 1]  ---  ## [Header 2] [Body content for Header 2]  ---  ## [Header 3] [Body content for Header 3]  ---');
+INSERT INTO "template"("id", "template") VALUES(0, 'separate the content in ''title'', ''body'' and ''conclusion''');
